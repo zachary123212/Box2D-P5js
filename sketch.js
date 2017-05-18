@@ -10,7 +10,14 @@ var r, l;
 
 function setup() {
     createCanvas(700, 700);
+
+    // Ground object
+    ground = bRect(0, 700, 700, 5, true);
+
+    // Rectangle object
     r = bRect(80, 20, 10, 10, false);
+
+    // Line object - not working yet TODO: fix
     l = bLine(20, 20, 100, 100, true);
 }
 
