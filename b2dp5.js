@@ -17,6 +17,22 @@ function BCirc(x, y, r, isFrozen) {
     this.body.setPosition(Vec2(x / SCALE, y / SCALE));
 }
 
+function BRect(x, y, w, h, isFrozen) {
+    BBody.call(this, isFrozen);
+
+    this.body.createFixture({
+        //TODO: fix whatever's wrong with collisions here. Also, maybe use Box object
+        shape: pl.Polygon(
+            [Vec2(0, 0), Vec2(w / SCALE, 0), Vec2(w / SCALE, h / SCALE), Vec2(0, h / SCALE)]
+        ),
+        // density: 50, // HERE BE DRAGONS
+        mass: 50,
+        restitution: 0.3
+    });
+
+    this.body.setPosition(Vec2(x / SCALE, y / SCALE));
+}
+
 function BLine(x1, y1, x2, y2, isFrozen) {
     BBody.call(this, isFrozen);
     this.body = world.createBody();
@@ -47,19 +63,19 @@ function drawBox2dShapes() {
 
             switch (shape.m_type) {
                 case "circle":
-                ellipse(body.getPosition().x * SCALE,
+                    ellipse(body.getPosition().x * SCALE,
                         body.getPosition().y * SCALE,
                         shape.m_radius * 2 * SCALE,
                         shape.m_radius * 2 * SCALE);
                     break;
                 case "edge":
-                line(shape.m_vertex1.x * SCALE,
-                     shape.m_vertex1.y * SCALE,
-                     shape.m_vertex2.x * SCALE,
-                     shape.m_vertex2.y * SCALE);
+                    line(shape.m_vertex1.x * SCALE,
+                        shape.m_vertex1.y * SCALE,
+                        shape.m_vertex2.x * SCALE,
+                        shape.m_vertex2.y * SCALE);
                     break;
                 case "polygon":
-                // TODO: find out if getPosition is expensive (could access variable directly)
+                    // TODO: find out if getPosition is expensive (could access variable directly)
                     translate(body.getPosition().x * SCALE, body.getPosition().y * SCALE);
                     beginShape();
                     for (i = 0; i < shape.m_count; i++) {
