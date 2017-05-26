@@ -5,6 +5,7 @@ var print = console.log;
 var SCALE = 10;
 var bodyList = [];
 
+
 function BCirc(x, y, r, isFrozen) {
     BBody.call(this, isFrozen);
 
@@ -21,11 +22,11 @@ function BRect(x, y, w, h, isFrozen) {
     BBody.call(this, isFrozen);
 
     this.body.createFixture({
-        //TODO: fix whatever's wrong with collisions here.
+        //TODO: fix whatever's wrong with collisions here; maybe check car example
         shape: pl.Box(w / SCALE, h / SCALE),
-        // density: 50, // HERE BE DRAGONS
-        mass: 50,
-        restitution: 0.3
+        density: 20 // HERE BE DRAGONS
+        // mass: 100
+        // restitution: 0.3
     });
 
     this.body.setPosition(Vec2(x / SCALE, y / SCALE));
@@ -45,7 +46,6 @@ function BBody(isFrozen) {
 
     if (!isFrozen) this.body.setDynamic();
 
-    //TODO: fix bug where dynamically spawned bodies are added to bodyList as "Window(0)"s
     bodyList.push(this);
 }
 

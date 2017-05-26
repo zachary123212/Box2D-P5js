@@ -19,5 +19,6 @@ function draw() {
 
 
 function mousePressed() {
-    BCirc(mouseX, mouseY, 20, false);
+    // Remember: if not prefaced with new, Window(0) is added to bodyList. This is why I should make create functions
+    new BCirc(mouseX, mouseY, 20, false);
 }
