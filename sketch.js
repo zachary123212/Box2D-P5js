@@ -7,7 +7,7 @@ function setup() {
 
 
     b = new BRect(100, 100, 20, 20, false);
-    c = new BCirc(20, 20, 20, false);
+    // c = new BCirc(20, 20, 20, false);
     p = new BCirc(60, 20, 20, false);
     l = new BLine(0, 500, 700, 700, true);
 }

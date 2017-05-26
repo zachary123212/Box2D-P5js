@@ -21,10 +21,8 @@ function BRect(x, y, w, h, isFrozen) {
     BBody.call(this, isFrozen);
 
     this.body.createFixture({
-        //TODO: fix whatever's wrong with collisions here. Also, maybe use Box object
-        shape: pl.Polygon(
-            [Vec2(0, 0), Vec2(w / SCALE, 0), Vec2(w / SCALE, h / SCALE), Vec2(0, h / SCALE)]
-        ),
+        //TODO: fix whatever's wrong with collisions here.
+        shape: pl.Box(w / SCALE, h / SCALE),
         // density: 50, // HERE BE DRAGONS
         mass: 50,
         restitution: 0.3
@@ -35,6 +33,7 @@ function BRect(x, y, w, h, isFrozen) {
 
 function BLine(x1, y1, x2, y2, isFrozen) {
     BBody.call(this, isFrozen);
+
     this.body = world.createBody();
 
     this.body.createFixture(pl.Edge(Vec2(x1 / SCALE, y1 / SCALE), Vec2(x2 / SCALE, y2 / SCALE)));
@@ -43,8 +42,10 @@ function BLine(x1, y1, x2, y2, isFrozen) {
 
 function BBody(isFrozen) {
     this.body = world.createBody();
+
     if (!isFrozen) this.body.setDynamic();
 
+    //TODO: fix bug where dynamically spawned bodies are added to bodyList as "Window(0)"s
     bodyList.push(this);
 }
 
