@@ -1,79 +1,71 @@
-// Shapes
+var pl = planck;
+var Vec2 = pl.Vec2;
+var print = console.log;
 
+var SCALE = 10;
+var bodyList = [];
 
-function bCirc(x, y, d, frozen) { return new BCirc(x, y, d, frozen); }
-function BCirc(x, y, d, frozen) {
-    var circleSd = new b2CircleDef();
-    circleSd.radius = d * 2;
-    circleSd.restitution = 0.8;
-    if (!frozen) circleSd.density = 1.0;
+function BCirc(x, y, r, isFrozen) {
+    BBody.call(this, isFrozen);
 
-    var circleBd = new b2BodyDef();
-    circleBd.AddShape(circleSd);
-    circleBd.position.Set(x, y);
+    this.body.createFixture({
+        shape: pl.Circle(r / SCALE),
+        density: 50,
+        restitution: 0.8
+    });
 
-    this.body = world.CreateBody(circleBd);
+    this.body.setPosition(Vec2(x / SCALE, y / SCALE));
 }
 
-function bRect(x, y, w, h, frozen) { return new BRect(x, y, w, h, frozen); }
-function BRect(x, y, w, h, frozen) {
-    var boxSd = new b2BoxDef();
-    boxSd.extents.Set(w, h);
-    if (!frozen) boxSd.density = 1.0;
+function BLine(x1, y1, x2, y2) {
+    this.body = world.createBody();
 
-    var boxBd = new b2BodyDef();
-    boxBd.AddShape(boxSd);
-    boxBd.position.Set(x, y);
-
-    this.body = world.CreateBody(boxBd);
+    this.body.createFixture(pl.Edge(Vec2(x1 / SCALE, y1 / SCALE), Vec2(x2 / SCALE, y2 / SCALE)));
 }
 
-function bLine(x1, y1, x2, y2, frozen) { return new BLine(x1, y1, x2, y2, frozen); }
-function BLine(x1, y1, x2, y2, frozen) {
-    var lineSd = new b2PolyDef();
-    if (!frozen) lineSd.density = 1.0;
 
-    lineSd.vertexCount = 2;
-    lineSd.vertices[0].Set(0, 0);
-    lineSd.vertices[1].Set(x2 - x1, y2 - y1);
+function BBody(isFrozen) {
+    this.body = world.createBody();
+    if (!isFrozen) this.body.setDynamic();
 
-    var lineBd = new b2BodyDef();
-    lineBd.AddShape(lineSd);
-    lineBd.position.Set(x1, y1);
-
-    this.body = world.CreateBody(lineBd);
+    bodyList.push(this);
 }
 
-// Shape Drawing
+
+//TODO: find way to efficiently iterate through custom objects instead of placnck bodies; it seems inefficient to be constantly multiplying and divinding by the scale factor
 
 function drawBox2dShapes() {
     clear();
     noFill();
-    for (var body = world.m_bodyList; body; body = body.m_next) {
-        shape = body.GetShapeList();
+    for (body = world.m_bodyList; body; body = body.m_next) {
+        for (fixture = body.m_fixtureList; fixture; fixture = fixture.m_next) {
+            var shape = fixture.m_shape;
 
-        if (shape !== null) {
             switch (shape.m_type) {
-                case b2Shape.e_circleShape:
-                    ellipse(body.m_position.x, body.m_position.y, shape.m_radius * 2, shape.m_radius * 2);
+                case "circle":
+                ellipse(body.getPosition().x * SCALE,
+                        body.getPosition().y * SCALE,
+                        shape.m_radius * 2 * SCALE,
+                        shape.m_radius * 2 * SCALE);
                     break;
-                case b2Shape.e_polyShape:
-                    for (var i = 0; i < shape.m_vertexCount - 1; i++) {
-                        line(
-                            body.m_position.x + shape.m_vertices[i].x,
-                            body.m_position.y + shape.m_vertices[i].y,
-                            body.m_position.x + shape.m_vertices[i + 1].x,
-                            body.m_position.y + shape.m_vertices[i + 1].y
-                        );
+                case "edge":
+                line(shape.m_vertex1.x * SCALE,
+                     shape.m_vertex1.y * SCALE,
+                     shape.m_vertex2.x * SCALE,
+                     shape.m_vertex2.y * SCALE);
+                    break;
+                case "polygon":
+                // TODO: find out if getPosition is expensive (could access variable directly)
+                    translate(body.getPosition().x * SCALE, body.getPosition().y * SCALE);
+                    beginShape();
+                    for (i = 0; i < shape.m_count; i++) {
+                        vertex(shape.m_vertices[i].x * SCALE, shape.m_vertices[i].y * SCALE);
                     }
-                    line(
-                        body.m_position.x + shape.m_vertices[shape.m_vertexCount - 1].x,
-                        body.m_position.y + shape.m_vertices[shape.m_vertexCount - 1].y,
-                        body.m_position.x + shape.m_vertices[0].x,
-                        body.m_position.y + shape.m_vertices[0].y
-                    );
+                    endShape(CLOSE);
+                    translate(-1 * body.getPosition().x * SCALE, -1 * body.getPosition().y * SCALE);
                     break;
             }
+
         }
     }
 }
