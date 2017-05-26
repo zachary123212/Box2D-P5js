@@ -17,7 +17,8 @@ function BCirc(x, y, r, isFrozen) {
     this.body.setPosition(Vec2(x / SCALE, y / SCALE));
 }
 
-function BLine(x1, y1, x2, y2) {
+function BLine(x1, y1, x2, y2, isFrozen) {
+    BBody.call(this, isFrozen);
     this.body = world.createBody();
 
     this.body.createFixture(pl.Edge(Vec2(x1 / SCALE, y1 / SCALE), Vec2(x2 / SCALE, y2 / SCALE)));
@@ -32,7 +33,10 @@ function BBody(isFrozen) {
 }
 
 
-//TODO: find way to efficiently iterate through custom objects instead of placnck bodies; it seems inefficient to be constantly multiplying and divinding by the scale factor
+//TODO: find way to efficiently iterate through custom objects instead of placnck bodies;
+//it seems inefficient to be constantly multiplying and divinding by the scale factor
+//UPDATE: I've introduced the BBody and bodyList inheritance as first steps to handle this
+//TODO: finish this
 
 function drawBox2dShapes() {
     clear();
